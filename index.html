@@ -3,638 +3,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallpapers from Unsplash</title>
+    <title>Wallpaper 4K</title>
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #6366f1;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #94a3b8;
-            --card-bg: #ffffff;
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --background-color: #ffffff;
+            --text-color: #333333;
+            --card-bg: #f5f5f5;
+            --navbar-bg: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        .dark-mode {
+            --primary-color: #6b8cae;
+            --secondary-color: #3a7ca5;
+            --background-color: #121212;
+            --text-color: #f5f5f5;
+            --card-bg: #1e1e1e;
+            --navbar-bg: #1e1e1e;
+            --border-color: #333333;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         body {
-            background-color: #f1f5f9;
-            color: var(--dark);
-            line-height: 1.5;
-            padding-bottom: 80px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding-top: 60px;
+            padding-bottom: 20px;
+            min-height: 100vh;
         }
 
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .search-container {
-            padding: 1rem;
-            display: flex;
-            gap: 0.5rem;
-            position: sticky;
-            top: 68px;
-            background-color: #f1f5f9;
-            z-index: 9;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--primary);
-        }
-
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            padding: 0 1rem;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        button:hover {
-            background-color: var(--primary-light);
-        }
-
-        button:disabled {
-            background-color: var(--gray);
-            cursor: not-allowed;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            padding: 0 1rem 1rem;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .card-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            display: block;
-            background-color: #e2e8f0;
-        }
-
-        .card-content {
-            padding: 0.75rem;
-        }
-
-        .photographer {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .photographer-name {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--dark);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .card-actions button {
-            flex: 1;
-            padding: 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        .load-more {
-            margin: 1rem auto;
-            display: block;
-            padding: 0.75rem 1.5rem;
-        }
-
-        .modal {
+        .navbar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        .modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal-header {
-            width: 100%;
-            padding: 1rem;
+            right: 0;
+            background-color: var(--navbar-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: absolute;
-            top: 0;
-            left: 0;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .modal-back-btn {
+        .navbar-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .navbar-menu {
+            display: flex;
+            list-style: none;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .navbar-menu::-webkit-scrollbar {
+            display: none;
+        }
+
+        .navbar-item {
+            padding: 8px 12px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .navbar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .dark-mode-toggle {
             background: none;
             border: none;
-            color: white;
-            font-size: 1.5rem;
+            color: var(--text-color);
+            font-size: 1.2rem;
             cursor: pointer;
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            padding: 5px;
+            margin-left: 10px;
         }
 
-        .modal-img-container {
+        .container {
+            padding: 15px;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-image {
             width: 100%;
-            max-width: 100%;
-            max-height: 80vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 3rem;
+            height: 100px;
+            object-fit: cover;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
         }
 
-        .modal-img {
-            max-width: 100%;
-            max-height: 80vh;
+        .category-name {
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .wallpapers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .wallpaper-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
+            aspect-ratio: 9/16;
+        }
+
+        .wallpaper-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .wallpaper-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: linear-gradient(45deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+
+        .preview-container {
+            margin-top: 20px;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 60vh;
             object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ffc3a0 0%, #ffafbd 100%);
         }
 
-        .modal-actions {
+        .action-buttons {
             display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            padding: 1rem;
-            width: 100%;
-            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .modal-actions button {
-            padding: 0.75rem 1.5rem;
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
         }
 
         .loading {
-            display: flex;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error-message {
             text-align: center;
-            padding: 2rem;
-            color: #dc2626;
-            grid-column: 1 / -1;
+            padding: 20px;
+            color: var(--primary-color);
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            grid-column: 1 / -1;
-            color: var(--gray);
+        .hidden {
+            display: none;
         }
 
-        @media (min-width: 768px) {
-            .grid {
-                grid-template-columns: repeat(3, 1fr);
+        @media (min-width: 600px) {
+            .categories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             }
-            
-            .card-img {
-                height: 220px;
-            }
-        }
 
-        @media (min-width: 1024px) {
-            .grid {
-                grid-template-columns: repeat(4, 1fr);
+            .wallpapers-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Wallpapers from Unsplash</h1>
-    </header>
+    <nav class="navbar">
+        <div class="navbar-title">Wallpaper 4K</div>
+        <ul class="navbar-menu">
+            <li class="navbar-item active" data-page="home">HOME</li>
+            <li class="navbar-item" data-page="local">LOCAL</li>
+            <li class="navbar-item" data-page="categories">CATEGORIES</li>
+            <li class="navbar-item" data-page="premium">PREMIUM</li>
+        </ul>
+        <button class="dark-mode-toggle" aria-label="Toggle dark mode">🌓</button>
+    </nav>
 
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search wallpapers (e.g. nature, minimal, abstract)">
-        <button id="search-btn">Search</button>
-    </div>
-
-    <div class="grid" id="wallpaper-grid"></div>
-
-    <button class="load-more" id="load-more">Load More</button>
-    <button class="load-more" id="random-btn">Random</button>
-
-    <div class="modal" id="image-modal">
-        <div class="modal-header">
-            <button class="modal-back-btn" id="back-btn">
-                ← Back
-            </button>
+    <div class="container">
+        <!-- Home Page -->
+        <div id="home-page" class="page">
+            <h1 class="page-title">Featured Wallpapers</h1>
+            <div class="wallpapers-grid" id="featured-wallpapers">
+                <!-- Featured wallpapers will be loaded here -->
+            </div>
         </div>
-        <div class="modal-img-container">
-            <img class="modal-img" id="modal-img" src="" alt="">
+
+        <!-- Local Page -->
+        <div id="local-page" class="page hidden">
+            <h1 class="page-title">Local Wallpapers</h1>
+            <div class="wallpapers-grid" id="local-wallpapers">
+                <!-- Local wallpapers will be loaded here -->
+                <div class="loading">No local wallpapers saved yet</div>
+            </div>
         </div>
-        <div class="modal-actions">
-            <button id="download-btn">Download</button>
-            <button id="share-btn">Share</button>
+
+        <!-- Categories Page -->
+        <div id="categories-page" class="page hidden">
+            <h1 class="page-title">Categories</h1>
+            <div class="categories-grid" id="categories-grid">
+                <!-- Categories will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Premium Page -->
+        <div id="premium-page" class="page hidden">
+            <h1 class="page-title">Premium Wallpapers</h1>
+            <div class="wallpapers-grid" id="premium-wallpapers">
+                <!-- Premium wallpapers will be loaded here -->
+                <div class="loading">Premium content requires subscription</div>
+            </div>
+        </div>
+
+        <!-- Category Gallery Page -->
+        <div id="gallery-page" class="page hidden">
+            <h1 class="page-title" id="gallery-title">Category</h1>
+            <div class="wallpapers-grid" id="category-wallpapers">
+                <!-- Category wallpapers will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Wallpaper Preview Page -->
+        <div id="preview-page" class="page hidden">
+            <div class="preview-container">
+                <img class="preview-image" id="preview-image" alt="Wallpaper preview">
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="download-btn">Download</button>
+                    <button class="btn btn-secondary" id="back-btn">Back</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Konfigurasi Akses Unsplash
+        // Unsplash API configuration
         const ACCESS_KEY = '8nhYPB_g_wMqQY0p9XAPjDKwvjE7805oaMw4XVOSPO0';
-        const API_URL = 'https://api.unsplash.com';
+        const SECRET_KEY = 'YCJVmICHsrm-RWjQEwSk9TEnolqcYaJeIZg1Af504AY';
         
-        // Variabel state aplikasi
-        let currentPage = 1;
-        let currentQuery = '';
-        let currentPhotos = [];
-        let currentModalPhoto = null;
-
-        // Elemen DOM
-        const wallpaperGrid = document.getElementById('wallpaper-grid');
-        const searchInput = document.getElementById('search-input');
-        const searchBtn = document.getElementById('search-btn');
-        const loadMoreBtn = document.getElementById('load-more');
-        const randomBtn = document.getElementById('random-btn');
-        const imageModal = document.getElementById('image-modal');
-        const modalImg = document.getElementById('modal-img');
+        // App state
+        let currentPage = 'home';
+        let currentCategory = '';
+        let currentWallpaper = null;
+        let categories = [
+            'Love', 'Music', 'Nature', 'News & Politics', 'Other', 
+            'Patterns', 'People', 'Sayings', 'Spiritual', 'Sport'
+        ];
+        
+        // DOM elements
+        const pages = {
+            home: document.getElementById('home-page'),
+            local: document.getElementById('local-page'),
+            categories: document.getElementById('categories-page'),
+            premium: document.getElementById('premium-page'),
+            gallery: document.getElementById('gallery-page'),
+            preview: document.getElementById('preview-page')
+        };
+        
+        const navbarItems = document.querySelectorAll('.navbar-item');
+        const darkModeToggle = document.querySelector('.dark-mode-toggle');
+        const categoriesGrid = document.getElementById('categories-grid');
+        const categoryWallpapers = document.getElementById('category-wallpapers');
+        const galleryTitle = document.getElementById('gallery-title');
+        const previewImage = document.getElementById('preview-image');
         const downloadBtn = document.getElementById('download-btn');
-        const shareBtn = document.getElementById('share-btn');
         const backBtn = document.getElementById('back-btn');
-
-        // Event listeners
-        searchBtn.addEventListener('click', () => {
-            const query = searchInput.value.trim();
-            if (query) {
-                currentQuery = query;
-                currentPage = 1;
-                fetchWallpapers(query);
-            }
-        });
-
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                searchBtn.click();
-            }
-        });
-
-        loadMoreBtn.addEventListener('click', () => {
-            currentPage += 1;
-            if (currentQuery) {
-                fetchWallpapers(currentQuery, currentPage);
-            } else {
-                fetchRandomWallpapers();
-            }
-        });
-
-        randomBtn.addEventListener('click', () => {
-            currentQuery = '';
-            currentPage = 1;
-            fetchRandomWallpapers();
-        });
-
-        backBtn.addEventListener('click', () => {
-            imageModal.classList.remove('active');
-        });
-
-        // Close modal when clicking outside image
-        imageModal.addEventListener('click', (e) => {
-            if (e.target === imageModal) {
-                imageModal.classList.remove('active');
-            }
-        });
-
-        downloadBtn.addEventListener('click', async () => {
-            if (currentModalPhoto) {
-                try {
-                    // Dapatkan URL download yang sebenarnya
-                    const response = await fetch(currentModalPhoto.links.download_location, {
-                        headers: {
-                            'Authorization': `Client-ID ${ACCESS_KEY}`
-                        }
-                    });
-                    
-                    const data = await response.json();
-                    const downloadUrl = data.url;
-                    
-                    // Buat elemen <a> untuk download
-                    const a = document.createElement('a');
-                    a.href = downloadUrl;
-                    a.download = `unsplash-${currentModalPhoto.id}.jpg`;
-                    a.target = '_blank';
-                    a.rel = 'noopener noreferrer';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                } catch (error) {
-                    console.error('Download error:', error);
-                    alert('Failed to download image. Please try again.');
-                }
-            }
-        });
-
-        shareBtn.addEventListener('click', () => {
-            if (currentModalPhoto && navigator.share) {
-                navigator.share({
-                    title: 'Wallpaper from Unsplash',
-                    text: `Check out this photo by ${currentModalPhoto.user.name} on Unsplash`,
-                    url: currentModalPhoto.links.html,
-                }).catch(err => {
-                    console.error('Error sharing:', err);
-                    alert('Sharing failed. Please copy the link manually.');
-                });
-            } else if (currentModalPhoto) {
-                // Fallback for browsers that don't support Web Share API
-                const shareUrl = currentModalPhoto.links.html;
-                prompt('Copy this link to share:', shareUrl);
-            }
-        });
-
-        // Fungsi untuk menampilkan loading state
-        function showLoading() {
-            wallpaperGrid.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                </div>
-            `;
-        }
-
-        // Fungsi untuk menampilkan error
-        function showError(message) {
-            wallpaperGrid.innerHTML = `
-                <div class="error-message">
-                    <p>${message}</p>
-                    <p>Please try again.</p>
-                </div>
-            `;
-        }
-
-        // Fungsi untuk menampilkan empty state
-        function showEmptyState() {
-            wallpaperGrid.innerHTML = `
-                <div class="empty-state">
-                    <p>No wallpapers found.</p>
-                    <p>Try different keywords or click "Random".</p>
-                </div>
-            `;
-        }
-
-        // Fungsi untuk mengambil wallpaper berdasarkan pencarian
-        async function fetchWallpapers(query, page = 1) {
-            try {
-                showLoading();
-                loadMoreBtn.disabled = true;
-                
-                const perPage = 20;
-                const orientation = 'portrait';
-                const url = `${API_URL}/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}&orientation=${orientation}`;
-                
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Client-ID ${ACCESS_KEY}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (page === 1) {
-                    currentPhotos = data.results;
-                } else {
-                    currentPhotos = [...currentPhotos, ...data.results];
-                }
-                
-                if (currentPhotos.length === 0) {
-                    showEmptyState();
-                } else {
-                    renderWallpapers(currentPhotos);
-                }
-                
-                loadMoreBtn.disabled = false;
-                loadMoreBtn.style.display = data.total_pages > page ? 'block' : 'none';
-            } catch (error) {
-                console.error('Error fetching wallpapers:', error);
-                showError('Failed to load wallpapers. Please check your internet connection.');
-                loadMoreBtn.disabled = false;
-            }
-        }
-
-        // Fungsi untuk mengambil wallpaper acak
-        async function fetchRandomWallpapers(count = 20) {
-            try {
-                showLoading();
-                loadMoreBtn.disabled = true;
-                
-                const orientation = 'portrait';
-                const url = `${API_URL}/photos/random?count=${count}&orientation=${orientation}`;
-                
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Client-ID ${ACCESS_KEY}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                currentPhotos = data;
-                
-                if (currentPhotos.length === 0) {
-                    showEmptyState();
-                } else {
-                    renderWallpapers(currentPhotos);
-                }
-                
-                loadMoreBtn.disabled = false;
-                loadMoreBtn.style.display = 'block';
-            } catch (error) {
-                console.error('Error fetching random wallpapers:', error);
-                showError('Failed to load random wallpapers. Please check your internet connection.');
-                loadMoreBtn.disabled = false;
-            }
-        }
-
-        // Fungsi untuk merender wallpaper ke grid
-        function renderWallpapers(photos) {
-            if (currentPage === 1) {
-                wallpaperGrid.innerHTML = '';
-            }
+        const featuredWallpapers = document.getElementById('featured-wallpapers');
+        
+        // Initialize the app
+        function init() {
+            // Set up event listeners
+            setupEventListeners();
             
-            photos.forEach(photo => {
+            // Load initial content
+            loadCategories();
+            loadFeaturedWallpapers();
+            
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navbar menu clicks
+            navbarItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const page = item.dataset.page;
+                    navigateTo(page);
+                    
+                    // Update active state
+                    navbarItems.forEach(navItem => navItem.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+            
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+            
+            // Back button in preview
+            backBtn.addEventListener('click', () => {
+                if (currentCategory) {
+                    navigateTo('gallery');
+                } else {
+                    navigateTo(currentPage);
+                }
+            });
+            
+            // Download button
+            downloadBtn.addEventListener('click', downloadWallpaper);
+        }
+        
+        // Navigation function
+        function navigateTo(page) {
+            // Hide all pages
+            Object.values(pages).forEach(page => page.classList.add('hidden'));
+            
+            // Show the requested page
+            pages[page].classList.remove('hidden');
+            
+            // Update current page
+            currentPage = page;
+            
+            // Special handling for certain pages
+            if (page === 'categories') {
+                loadCategories();
+            }
+        }
+        
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            
+            // Save preference
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+        
+        // Load categories
+        function loadCategories() {
+            categoriesGrid.innerHTML = '';
+            
+            categories.forEach(category => {
                 const card = document.createElement('div');
-                card.className = 'card';
+                card.className = 'category-card';
+                card.dataset.category = category;
+                
                 card.innerHTML = `
-                    <img class="card-img" src="${photo.urls.small}" alt="${photo.alt_description || 'Wallpaper'}" loading="lazy" data-src="${photo.urls.regular}" data-id="${photo.id}">
-                    <div class="card-content">
-                        <div class="photographer">
-                            <img class="avatar" src="${photo.user.profile_image.small}" alt="${photo.user.name}" loading="lazy">
-                            <span class="photographer-name">${photo.user.name}</span>
-                        </div>
-                        <div class="card-actions">
-                            <button class="view-btn" data-id="${photo.id}">View</button>
-                            <button class="download-card-btn" data-id="${photo.id}">Download</button>
-                        </div>
-                    </div>
+                    <div class="category-image" data-category="${category}"></div>
+                    <div class="category-name">${category}</div>
                 `;
                 
-                wallpaperGrid.appendChild(card);
+                card.addEventListener('click', () => openCategory(category));
+                categoriesGrid.appendChild(card);
             });
-            
-            // Attach event listeners to new cards
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const photoId = e.target.getAttribute('data-id');
-                    const photo = currentPhotos.find(p => p.id === photoId);
-                    if (photo) {
-                        showModal(photo);
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.download-card-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const photoId = e.target.getAttribute('data-id');
-                    const photo = currentPhotos.find(p => p.id === photoId);
-                    if (photo) {
-                        try {
-                            // Dapatkan URL download yang sebenarnya
-                            const response = await fetch(photo.links.download_location, {
-                                headers: {
-                                    'Authorization': `Client-ID ${ACCESS_KEY}`
-                                }
-                            });
-                            
-                            const data = await response.json();
-                            const downloadUrl = data.url;
-                            
-                            // Buat elemen <a> untuk download
-                            const a = document.createElement('a');
-                            a.href = downloadUrl;
-                            a.download = `unsplash-${photo.id}.jpg`;
-                            a.target = '_blank';
-                            a.rel = 'noopener noreferrer';
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                        } catch (error) {
-                            console.error('Download error:', error);
-                            alert('Failed to download image. Please try again.');
-                        }
-                    }
-                });
-            });
-            
-            // Lazy load images when they come into view
-            const lazyImages = document.querySelectorAll('.card-img[data-src]');
-            const imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.getAttribute('data-src');
-                        img.removeAttribute('data-src');
-                        imageObserver.unobserve(img);
-                    }
-                });
-            });
-            
-            lazyImages.forEach(img => imageObserver.observe(img));
         }
-
-        // Fungsi untuk menampilkan gambar di modal
-        function showModal(photo) {
-            currentModalPhoto = photo;
-            modalImg.src = photo.urls.regular;
-            modalImg.alt = photo.alt_description || 'Wallpaper';
-            imageModal.classList.add('active');
+        
+        // Open a category gallery
+        function openCategory(category) {
+            currentCategory = category;
+            galleryTitle.textContent = category;
+            categoryWallpapers.innerHTML = '<div class="loading">Loading wallpapers...</div>';
+            
+            navigateTo('gallery');
+            fetchWallpapers(category);
         }
-
-        // Inisialisasi: muat wallpaper acak saat pertama kali load
-        fetchRandomWallpapers();
+        
+        // Fetch wallpapers from Unsplash API
+        async function fetchWallpapers(category) {
+            try {
+                const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(category)}&client_id=${ACCESS_KEY}&per_page=20&orientation=portrait`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                displayWallpapers(data.results, categoryWallpapers);
+            } catch (error) {
+                console.error('Error fetching wallpapers:', error);
+                categoryWallpapers.innerHTML = '<div class="loading">Failed to load wallpapers. Please try again later.</div>';
+            }
+        }
+        
+        // Load featured wallpapers
+        async function loadFeaturedWallpapers() {
+            try {
+                const url = `https://api.unsplash.com/photos/random?client_id=${ACCESS_KEY}&count=10&orientation=portrait`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                displayWallpapers(data, featuredWallpapers);
+            } catch (error) {
+                console.error('Error fetching featured wallpapers:', error);
+                featuredWallpapers.innerHTML = '<div class="loading">Failed to load featured wallpapers. Please try again later.</div>';
+            }
+        }
+        
+        // Display wallpapers in a grid
+        function displayWallpapers(wallpapers, container) {
+            container.innerHTML = '';
+            
+            if (!wallpapers || wallpapers.length === 0) {
+                container.innerHTML = '<div class="loading">No wallpapers found</div>';
+                return;
+            }
+            
+            wallpapers.forEach(wallpaper => {
+                const card = document.createElement('div');
+                card.className = 'wallpaper-card';
+                card.dataset.id = wallpaper.id;
+                
+                const img = document.createElement('img');
+                img.className = 'wallpaper-image';
+                img.alt = wallpaper.alt_description || 'Wallpaper image';
+                img.loading = 'lazy';
+                
+                // Use small thumbnail first, then load full quality
+                img.src = wallpaper.urls?.thumb || createPlaceholder();
+                img.dataset.full = wallpaper.urls?.regular || createPlaceholder();
+                
+                img.addEventListener('click', () => previewWallpaper(wallpaper));
+                card.appendChild(img);
+                container.appendChild(card);
+                
+                // Load full quality image after small one is loaded
+                if (wallpaper.urls?.regular) {
+                    const fullImg = new Image();
+                    fullImg.src = wallpaper.urls.regular;
+                    fullImg.onload = () => {
+                        img.src = wallpaper.urls.regular;
+                    };
+                }
+            });
+        }
+        
+        // Preview a wallpaper
+        function previewWallpaper(wallpaper) {
+            currentWallpaper = wallpaper;
+            previewImage.src = wallpaper.urls?.regular || createPlaceholder();
+            previewImage.alt = wallpaper.alt_description || 'Wallpaper preview';
+            navigateTo('preview');
+        }
+        
+        // Download wallpaper
+        function downloadWallpaper() {
+            if (!currentWallpaper) return;
+            
+            const link = document.createElement('a');
+            const timestamp = new Date().getTime();
+            const category = currentCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const filename = `wallpaper-${category}-${timestamp}.jpg`;
+            
+            link.href = currentWallpaper.urls?.regular || createPlaceholder();
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Create a placeholder image
+        function createPlaceholder() {
+            return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGRjljYjEiLz48cGF0aCBkPSJNMCAwTDEwMCAxMDAiIHN0cm9rZT0iI0ZGRiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHBhdGggZD0iTTEwMCAwTDAgMTAwIiBzdHJva2U9IiNGRkYiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==';
+        }
+        
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
