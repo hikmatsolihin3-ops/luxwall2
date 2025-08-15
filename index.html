@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallpapers from Unsplash</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.5;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .search-container {
+            padding: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            position: sticky;
+            top: 68px;
+            background-color: #f1f5f9;
+            z-index: 9;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background-color: var(--primary-light);
+        }
+
+        button:disabled {
+            background-color: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            padding: 0 1rem 1rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+            background-color: #e2e8f0;
+        }
+
+        .card-content {
+            padding: 0.75rem;
+        }
+
+        .photographer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .photographer-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .card-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .load-more {
+            margin: 1rem auto;
+            display: block;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-img-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            max-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .modal-actions button {
+            padding: 0.75rem 1.5rem;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 2rem;
+            color: #dc2626;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            grid-column: 1 / -1;
+            color: var(--gray);
+        }
+
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .card-img {
+                height: 220px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Wallpapers from Unsplash</h1>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search wallpapers (e.g. nature, minimal, abstract)">
+        <button id="search-btn">Search</button>
+    </div>
+
+    <div class="grid" id="wallpaper-grid"></div>
+
+    <button class="load-more" id="load-more">Load More</button>
+    <button class="load-more" id="random-btn">Random</button>
+
+    <div class="modal" id="image-modal">
+        <div class="modal-img-container">
+            <button class="modal-close-btn" id="close-modal">&times;</button>
+            <img class="modal-img" id="modal-img" src="" alt="">
+        </div>
+        <div class="modal-actions">
+            <button id="download-btn">Download</button>
+            <button id="share-btn">Share</button>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Akses Unsplash
+        const ACCESS_KEY = '8nhYPB_g_wMqQY0p9XAPjDKwvjE7805oaMw4XVOSPO0';
+        const API_URL = 'https://api.unsplash.com';
+        
+        // Variabel state aplikasi
+        let currentPage = 1;
+        let currentQuery = '';
+        let currentPhotos = [];
+        let currentModalPhoto = null;
+
+        // Elemen DOM
+        const wallpaperGrid = document.getElementById('wallpaper-grid');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const loadMoreBtn = document.getElementById('load-more');
+        const randomBtn = document.getElementById('random-btn');
+        const imageModal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-img');
+        const downloadBtn = document.getElementById('download-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const closeModal = document.getElementById('close-modal');
+
+        // Event listeners
+        searchBtn.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (query) {
+                currentQuery = query;
+                currentPage = 1;
+                fetchWallpapers(query);
+            }
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchBtn.click();
+            }
+        });
+
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage += 1;
+            if (currentQuery) {
+                fetchWallpapers(currentQuery, currentPage);
+            } else {
+                fetchRandomWallpapers();
+            }
+        });
+
+        randomBtn.addEventListener('click', () => {
+            currentQuery = '';
+            currentPage = 1;
+            fetchRandomWallpapers();
+        });
+
+        closeModal.addEventListener('click', () => {
+            imageModal.classList.remove('active');
+        });
+
+        downloadBtn.addEventListener('click', async () => {
+            if (currentModalPhoto) {
+                try {
+                    // Dapatkan URL download yang sebenarnya
+                    const response = await fetch(currentModalPhoto.links.download_location, {
+                        headers: {
+                            'Authorization': `Client-ID ${ACCESS_KEY}`
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    const downloadUrl = data.url;
+                    
+                    // Buat elemen <a> untuk download
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `unsplash-${currentModalPhoto.id}.jpg`;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } catch (error) {
+                    console.error('Download error:', error);
+                    alert('Failed to download image. Please try again.');
+                }
+            }
+        });
+
+        shareBtn.addEventListener('click', () => {
+            if (currentModalPhoto && navigator.share) {
+                navigator.share({
+                    title: 'Wallpaper from Unsplash',
+                    text: `Check out this photo by ${currentModalPhoto.user.name} on Unsplash`,
+                    url: currentModalPhoto.links.html,
+                }).catch(err => {
+                    console.error('Error sharing:', err);
+                    alert('Sharing failed. Please copy the link manually.');
+                });
+            } else if (currentModalPhoto) {
+                // Fallback for browsers that don't support Web Share API
+                const shareUrl = currentModalPhoto.links.html;
+                prompt('Copy this link to share:', shareUrl);
+            }
+        });
+
+        // Fungsi untuk menampilkan loading state
+        function showLoading() {
+            wallpaperGrid.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            `;
+        }
+
+        // Fungsi untuk menampilkan error
+        function showError(message) {
+            wallpaperGrid.innerHTML = `
+                <div class="error-message">
+                    <p>${message}</p>
+                    <p>Please try again.</p>
+                </div>
+            `;
+        }
+
+        // Fungsi untuk menampilkan empty state
+        function showEmptyState() {
+            wallpaperGrid.innerHTML = `
+                <div class="empty-state">
+                    <p>No wallpapers found.</p>
+                    <p>Try different keywords or click "Random".</p>
+                </div>
+            `;
+        }
+
+        // Fungsi untuk mengambil wallpaper berdasarkan pencarian
+        async function fetchWallpapers(query, page = 1) {
+            try {
+                showLoading();
+                loadMoreBtn.disabled = true;
+                
+                const perPage = 20;
+                const orientation = 'portrait';
+                const url = `${API_URL}/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}&orientation=${orientation}`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Client-ID ${ACCESS_KEY}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (page === 1) {
+                    currentPhotos = data.results;
+                } else {
+                    currentPhotos = [...currentPhotos, ...data.results];
+                }
+                
+                if (currentPhotos.length === 0) {
+                    showEmptyState();
+                } else {
+                    renderWallpapers(currentPhotos);
+                }
+                
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.style.display = data.total_pages > page ? 'block' : 'none';
+            } catch (error) {
+                console.error('Error fetching wallpapers:', error);
+                showError('Failed to load wallpapers. Please check your internet connection.');
+                loadMoreBtn.disabled = false;
+            }
+        }
+
+        // Fungsi untuk mengambil wallpaper acak
+        async function fetchRandomWallpapers(count = 20) {
+            try {
+                showLoading();
+                loadMoreBtn.disabled = true;
+                
+                const orientation = 'portrait';
+                const url = `${API_URL}/photos/random?count=${count}&orientation=${orientation}`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Client-ID ${ACCESS_KEY}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                currentPhotos = data;
+                
+                if (currentPhotos.length === 0) {
+                    showEmptyState();
+                } else {
+                    renderWallpapers(currentPhotos);
+                }
+                
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching random wallpapers:', error);
+                showError('Failed to load random wallpapers. Please check your internet connection.');
+                loadMoreBtn.disabled = false;
+            }
+        }
+
+        // Fungsi untuk merender wallpaper ke grid
+        function renderWallpapers(photos) {
+            if (currentPage === 1) {
+                wallpaperGrid.innerHTML = '';
+            }
+            
+            photos.forEach(photo => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img class="card-img" src="${photo.urls.small}" alt="${photo.alt_description || 'Wallpaper'}" loading="lazy" data-src="${photo.urls.regular}" data-id="${photo.id}">
+                    <div class="card-content">
+                        <div class="photographer">
+                            <img class="avatar" src="${photo.user.profile_image.small}" alt="${photo.user.name}" loading="lazy">
+                            <span class="photographer-name">${photo.user.name}</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="view-btn" data-id="${photo.id}">View</button>
+                            <button class="download-card-btn" data-id="${photo.id}">Download</button>
+                        </div>
+                    </div>
+                `;
+                
+                wallpaperGrid.appendChild(card);
+            });
+            
+            // Attach event listeners to new cards
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const photoId = e.target.getAttribute('data-id');
+                    const photo = currentPhotos.find(p => p.id === photoId);
+                    if (photo) {
+                        showModal(photo);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.download-card-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const photoId = e.target.getAttribute('data-id');
+                    const photo = currentPhotos.find(p => p.id === photoId);
+                    if (photo) {
+                        try {
+                            // Dapatkan URL download yang sebenarnya
+                            const response = await fetch(photo.links.download_location, {
+                                headers: {
+                                    'Authorization': `Client-ID ${ACCESS_KEY}`
+                                }
+                            });
+                            
+                            const data = await response.json();
+                            const downloadUrl = data.url;
+                            
+                            // Buat elemen <a> untuk download
+                            const a = document.createElement('a');
+                            a.href = downloadUrl;
+                            a.download = `unsplash-${photo.id}.jpg`;
+                            a.target = '_blank';
+                            a.rel = 'noopener noreferrer';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        } catch (error) {
+                            console.error('Download error:', error);
+                            alert('Failed to download image. Please try again.');
+                        }
+                    }
+                });
+            });
+            
+            // Lazy load images when they come into view
+            const lazyImages = document.querySelectorAll('.card-img[data-src]');
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.getAttribute('data-src');
+                        img.removeAttribute('data-src');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+            
+            lazyImages.forEach(img => imageObserver.observe(img));
+        }
+
+        // Fungsi untuk menampilkan gambar di modal
+        function showModal(photo) {
+            currentModalPhoto = photo;
+            modalImg.src = photo.urls.regular;
+            modalImg.alt = photo.alt_description || 'Wallpaper';
+            imageModal.classList.add('active');
+        }
+
+        // Inisialisasi: muat wallpaper acak saat pertama kali load
+        fetchRandomWallpapers();
+    </script>
+</body>
+</html>
