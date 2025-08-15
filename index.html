@@ -3,28 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallpaper 4K</title>
+    <title>Jadwal Sholat & Kiblat</title>
     <style>
         :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #166088;
-            --background-color: #ffffff;
+            --primary-color: #2c786c;
+            --secondary-color: #004445;
+            --background-color: #f8f5f1;
             --text-color: #333333;
-            --card-bg: #f5f5f5;
+            --card-bg: #ffffff;
             --navbar-bg: #ffffff;
             --border-color: #e0e0e0;
-            --success-color: #4caf50;
+            --highlight-color: #f8b400;
+            --success-color: #28a745;
         }
 
         .dark-mode {
-            --primary-color: #6b8cae;
-            --secondary-color: #3a7ca5;
+            --primary-color: #3aa8a0;
+            --secondary-color: #2d7d7d;
             --background-color: #121212;
             --text-color: #f5f5f5;
             --card-bg: #1e1e1e;
             --navbar-bg: #1e1e1e;
             --border-color: #333333;
-            --success-color: #81c784;
+            --highlight-color: #ffc107;
+            --success-color: #4caf50;
         }
 
         * {
@@ -112,70 +114,39 @@
             color: var(--primary-color);
         }
 
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .wallpapers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-        }
-
-        .category-card, .wallpaper-card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid var(--border-color);
-        }
-
-        .category-card:hover, .wallpaper-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .category-image {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
-        }
-
-        .wallpaper-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background: linear-gradient(45deg, #a1c4fd 0%, #c2e9fb 100%);
-        }
-
-        .category-name {
-            padding: 10px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .preview-container {
-            margin-top: 20px;
-        }
-
-        .preview-image {
-            width: 100%;
-            max-height: 60vh;
-            object-fit: contain;
-            border-radius: 8px;
+        .current-date {
             margin-bottom: 15px;
-            background: linear-gradient(45deg, #ffc3a0 0%, #ffafbd 100%);
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.8;
         }
 
-        .action-buttons {
+        .location-form {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
         }
 
         .btn {
@@ -185,7 +156,8 @@
             font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s;
-            flex: 1;
+            align-self: flex-end;
+            height: 40px;
         }
 
         .btn-primary {
@@ -193,58 +165,163 @@
             color: white;
         }
 
-        .btn-secondary {
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-
         .btn-primary:hover {
             background-color: var(--secondary-color);
         }
 
-        .btn-secondary:hover {
-            background-color: var(--border-color);
+        .prayer-times {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
+        .prayer-times th, .prayer-times td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .prayer-times th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .prayer-times tr:last-child td {
+            border-bottom: none;
+        }
+
+        .prayer-times tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .prayer-times tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .highlight-time {
+            color: var(--highlight-color);
+            font-weight: bold;
+        }
+
+        .compass-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        .compass {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .compass-arrow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 4px;
+            background-color: var(--highlight-color);
+            transform-origin: left center;
+            z-index: 2;
+        }
+
+        .compass-arrow:after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: -8px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid var(--highlight-color);
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+        }
+
+        .compass-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .compass-marker {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background-color: var(--text-color);
+            opacity: 0.5;
+            transform-origin: bottom center;
+        }
+
+        .compass-label {
+            position: absolute;
+            font-size: 0.8rem;
+            color: var(--text-color);
+            transform-origin: center;
+        }
+
+        .compass-north {
             color: var(--primary-color);
-            grid-column: 1 / -1;
+            font-weight: bold;
+        }
+
+        .compass-qibla {
+            color: var(--highlight-color);
+            font-weight: bold;
+        }
+
+        .instruction {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.8;
         }
 
         .message {
-            text-align: center;
             padding: 15px;
             margin: 10px 0;
             border-radius: 4px;
             background-color: var(--card-bg);
+            text-align: center;
         }
 
-        .success-message {
-            background-color: var(--success-color);
-            color: white;
+        .error-message {
+            color: #dc3545;
         }
 
         .hidden {
             display: none;
         }
 
-        @media (min-width: 600px) {
-            .categories-grid {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        @media (max-width: 600px) {
+            .prayer-times th, .prayer-times td {
+                padding: 8px 10px;
+                font-size: 0.9rem;
             }
 
-            .wallpapers-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            .compass-container {
+                width: 150px;
+                height: 150px;
             }
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-title">Wallpaper 4K</div>
+        <div class="navbar-title">Jadwal Sholat & Kiblat</div>
         <ul class="navbar-menu">
             <li class="navbar-item active" data-page="home" aria-label="Home">HOME</li>
             <li class="navbar-item" data-page="local" aria-label="Local">LOCAL</li>
@@ -257,99 +334,102 @@
     <div class="container">
         <!-- Home Page -->
         <div id="home-page" class="page">
-            <h1 class="page-title">Featured Wallpapers</h1>
-            <div class="wallpapers-grid" id="featured-wallpapers">
-                <div class="loading">Loading featured wallpapers...</div>
+            <h1 class="page-title">Jadwal Sholat</h1>
+            <div class="current-date" id="current-date"></div>
+            
+            <div class="location-form">
+                <div class="input-group">
+                    <label for="city" class="input-label">Kota</label>
+                    <input type="text" id="city" class="form-input" placeholder="Masukkan kota" value="Jakarta">
+                </div>
+                <div class="input-group">
+                    <label for="country" class="input-label">Negara</label>
+                    <input type="text" id="country" class="form-input" placeholder="Masukkan negara" value="Indonesia">
+                </div>
+                <button id="load-schedule" class="btn btn-primary">Muat Jadwal</button>
+            </div>
+            
+            <div id="prayer-times-container">
+                <table class="prayer-times">
+                    <thead>
+                        <tr>
+                            <th>Waktu Sholat</th>
+                            <th>Jam</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prayer-times-body">
+                        <!-- Prayer times will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <h2 class="page-title">Arah Kiblat</h2>
+            <div class="instruction">Izinkan lokasi agar arah kiblat dapat ditampilkan dengan benar.</div>
+            <div class="compass-container">
+                <div class="compass">
+                    <div class="compass-arrow" id="qibla-arrow"></div>
+                    <div class="compass-markers" id="compass-markers"></div>
+                </div>
             </div>
         </div>
 
         <!-- Local Page -->
         <div id="local-page" class="page hidden">
-            <h1 class="page-title">Local Wallpapers</h1>
-            <div class="wallpapers-grid" id="local-wallpapers">
-                <div class="message">No local wallpapers saved yet</div>
-            </div>
+            <h1 class="page-title">Local Data</h1>
+            <div class="message">Tidak ada data lokal</div>
         </div>
 
         <!-- Categories Page -->
         <div id="categories-page" class="page hidden">
             <h1 class="page-title">Categories</h1>
-            <div class="categories-grid" id="categories-grid">
-                <!-- Categories will be loaded here -->
-            </div>
+            <div class="message">Fitur kategori belum tersedia</div>
         </div>
 
         <!-- Premium Page -->
         <div id="premium-page" class="page hidden">
-            <h1 class="page-title">Premium Wallpapers</h1>
-            <div class="wallpapers-grid" id="premium-wallpapers">
-                <div class="message">Premium content requires subscription</div>
-            </div>
-        </div>
-
-        <!-- Category Gallery Page -->
-        <div id="gallery-page" class="page hidden">
-            <h1 class="page-title" id="gallery-title">Category</h1>
-            <div class="wallpapers-grid" id="category-wallpapers">
-                <!-- Category wallpapers will be loaded here -->
-            </div>
-        </div>
-
-        <!-- Wallpaper Preview Page -->
-        <div id="preview-page" class="page hidden">
-            <div class="preview-container">
-                <img class="preview-image" id="preview-image" alt="Wallpaper preview">
-                <div id="message-container"></div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" id="download-btn">Download</button>
-                    <button class="btn btn-secondary" id="back-btn">Back</button>
-                </div>
-            </div>
+            <h1 class="page-title">Premium</h1>
+            <div class="message">Fitur premium belum tersedia</div>
         </div>
     </div>
 
     <script>
-        // Unsplash API configuration
-        const ACCESS_KEY = '8nhYPB_g_wMqQY0p9XAPjDKwvjE7805oaMw4XVOSPO0';
-        
         // App state
         let currentPage = 'home';
-        let currentCategory = '';
-        let currentWallpaper = null;
-        let categories = [
-            'Love', 'Music', 'Nature', 'News & Politics', 'Other', 
-            'Patterns', 'People', 'Sayings', 'Spiritual', 'Sport'
-        ];
+        let currentLocation = null;
+        let currentQiblaDirection = null;
+        let watchId = null;
         
         // DOM elements
         const pages = {
             home: document.getElementById('home-page'),
             local: document.getElementById('local-page'),
             categories: document.getElementById('categories-page'),
-            premium: document.getElementById('premium-page'),
-            gallery: document.getElementById('gallery-page'),
-            preview: document.getElementById('preview-page')
+            premium: document.getElementById('premium-page')
         };
         
         const navbarItems = document.querySelectorAll('.navbar-item');
         const darkModeToggle = document.querySelector('.dark-mode-toggle');
-        const categoriesGrid = document.getElementById('categories-grid');
-        const categoryWallpapers = document.getElementById('category-wallpapers');
-        const galleryTitle = document.getElementById('gallery-title');
-        const previewImage = document.getElementById('preview-image');
-        const downloadBtn = document.getElementById('download-btn');
-        const backBtn = document.getElementById('back-btn');
-        const featuredWallpapers = document.getElementById('featured-wallpapers');
-        const messageContainer = document.getElementById('message-container');
+        const currentDateEl = document.getElementById('current-date');
+        const cityInput = document.getElementById('city');
+        const countryInput = document.getElementById('country');
+        const loadScheduleBtn = document.getElementById('load-schedule');
+        const prayerTimesBody = document.getElementById('prayer-times-body');
+        const qiblaArrow = document.getElementById('qibla-arrow');
+        const compassMarkers = document.getElementById('compass-markers');
         
         // Initialize the app
         function init() {
             // Set up event listeners
             setupEventListeners();
             
-            // Load initial content
-            loadCategories();
-            loadFeaturedWallpapers();
+            // Set current date
+            updateCurrentDate();
+            
+            // Load initial prayer times
+            loadPrayerTimes();
+            
+            // Initialize compass
+            initCompass();
             
             // Check for saved dark mode preference
             if (localStorage.getItem('darkMode') === 'enabled') {
@@ -374,17 +454,8 @@
             // Dark mode toggle
             darkModeToggle.addEventListener('click', toggleDarkMode);
             
-            // Back button in preview
-            backBtn.addEventListener('click', () => {
-                if (currentCategory) {
-                    navigateTo('gallery');
-                } else {
-                    navigateTo(currentPage);
-                }
-            });
-            
-            // Download button
-            downloadBtn.addEventListener('click', downloadWallpaper);
+            // Load schedule button
+            loadScheduleBtn.addEventListener('click', loadPrayerTimes);
         }
         
         // Navigation function
@@ -398,8 +469,12 @@
             // Update current page
             currentPage = page;
             
-            // Clear any messages
-            messageContainer.innerHTML = '';
+            // Special handling for pages
+            if (page === 'home') {
+                initCompass();
+            } else {
+                stopCompass();
+            }
         }
         
         // Toggle dark mode
@@ -414,162 +489,220 @@
             }
         }
         
-        // Load categories
-        function loadCategories() {
-            categoriesGrid.innerHTML = '';
-            
-            categories.forEach(category => {
-                const card = document.createElement('div');
-                card.className = 'category-card';
-                card.dataset.category = category;
-                card.setAttribute('aria-label', `${category} category`);
-                
-                card.innerHTML = `
-                    <div class="category-image" data-category="${category}"></div>
-                    <div class="category-name">${category}</div>
-                `;
-                
-                card.addEventListener('click', () => openCategory(category));
-                categoriesGrid.appendChild(card);
-            });
+        // Update current date
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateEl.textContent = now.toLocaleDateString('id-ID', options);
         }
         
-        // Open a category gallery
-        function openCategory(category) {
-            currentCategory = category;
-            galleryTitle.textContent = category;
-            categoryWallpapers.innerHTML = '<div class="loading">Loading wallpapers...</div>';
+        // Load prayer times from Aladhan API
+        async function loadPrayerTimes() {
+            const city = cityInput.value.trim() || 'Jakarta';
+            const country = countryInput.value.trim() || 'Indonesia';
             
-            navigateTo('gallery');
-            fetchWallpapers(category);
-        }
-        
-        // Fetch wallpapers from Unsplash API
-        async function fetchWallpapers(category) {
             try {
-                const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(category)}&client_id=${ACCESS_KEY}&per_page=30&orientation=portrait`;
+                const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=2`;
                 
                 const response = await fetch(url);
                 const data = await response.json();
                 
-                displayWallpapers(data.results, categoryWallpapers);
-            } catch (error) {
-                console.error('Error fetching wallpapers:', error);
-                categoryWallpapers.innerHTML = '<div class="loading">Failed to load wallpapers. Please try again later.</div>';
-            }
-        }
-        
-        // Load featured wallpapers
-        async function loadFeaturedWallpapers() {
-            try {
-                const url = `https://api.unsplash.com/photos/random?client_id=${ACCESS_KEY}&count=15&orientation=portrait`;
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                displayWallpapers(data, featuredWallpapers);
-            } catch (error) {
-                console.error('Error fetching featured wallpapers:', error);
-                featuredWallpapers.innerHTML = '<div class="loading">Failed to load featured wallpapers. Please try again later.</div>';
-            }
-        }
-        
-        // Display wallpapers in a grid
-        function displayWallpapers(wallpapers, container) {
-            container.innerHTML = '';
-            
-            if (!wallpapers || wallpapers.length === 0) {
-                container.innerHTML = '<div class="message">No wallpapers found</div>';
-                return;
-            }
-            
-            wallpapers.forEach(wallpaper => {
-                const card = document.createElement('div');
-                card.className = 'wallpaper-card';
-                card.dataset.id = wallpaper.id;
-                card.setAttribute('aria-label', wallpaper.alt_description || 'Wallpaper image');
-                
-                const img = document.createElement('img');
-                img.className = 'wallpaper-image';
-                img.alt = wallpaper.alt_description || 'Wallpaper image';
-                img.loading = 'lazy';
-                
-                // Use small thumbnail first, then load full quality
-                img.src = wallpaper.urls?.thumb || createPlaceholder();
-                img.dataset.full = wallpaper.urls?.regular || createPlaceholder();
-                
-                img.addEventListener('click', () => previewWallpaper(wallpaper));
-                card.appendChild(img);
-                container.appendChild(card);
-                
-                // Load full quality image after small one is loaded
-                if (wallpaper.urls?.regular) {
-                    const fullImg = new Image();
-                    fullImg.src = wallpaper.urls.regular;
-                    fullImg.onload = () => {
-                        img.src = wallpaper.urls.regular;
-                    };
+                if (data.code === 200) {
+                    displayPrayerTimes(data.data.timings);
+                } else {
+                    throw new Error(data.data || 'Failed to load prayer times');
                 }
-            });
+            } catch (error) {
+                console.error('Error fetching prayer times:', error);
+                prayerTimesBody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="error-message">Gagal memuat jadwal sholat. Silakan coba lagi.</td>
+                    </tr>
+                `;
+            }
         }
         
-        // Preview a wallpaper
-        function previewWallpaper(wallpaper) {
-            currentWallpaper = wallpaper;
-            previewImage.src = wallpaper.urls?.regular || createPlaceholder();
-            previewImage.alt = wallpaper.alt_description || 'Wallpaper preview';
-            navigateTo('preview');
-        }
-        
-        // Download wallpaper using canvas and Blob
-        function downloadWallpaper() {
-            if (!currentWallpaper) return;
+        // Display prayer times in table
+        function displayPrayerTimes(timings) {
+            const prayerNames = {
+                Fajr: 'Subuh',
+                Sunrise: 'Syuruq',
+                Dhuhr: 'Dzuhur',
+                Asr: 'Ashar',
+                Maghrib: 'Maghrib',
+                Isha: 'Isya',
+                Imsak: 'Imsak',
+                Midnight: 'Tengah Malam'
+            };
             
-            const img = new Image();
-            img.crossOrigin = 'Anonymous';
-            img.src = currentWallpaper.urls?.regular || createPlaceholder();
+            const prayersToShow = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Imsak', 'Midnight'];
+            const now = new Date();
+            const currentTime = now.getHours() * 100 + now.getMinutes();
             
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
+            let tableHTML = '';
+            
+            prayersToShow.forEach(prayer => {
+                const time = timings[prayer];
+                if (!time) return;
                 
-                canvas.toBlob(function(blob) {
-                    const timestamp = new Date().getTime();
-                    const category = currentCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                    const filename = `wallpaper-${category}-${timestamp}.jpg`;
-                    
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    
-                    // Show success message
-                    showMessage('Gambar tersimpan. Silakan atur sebagai wallpaper dari galeri HP Anda.');
-                }, 'image/jpeg', 0.9);
-            };
+                // Convert time to minutes for comparison (e.g., "05:30" -> 530)
+                const prayerTime = parseInt(time.replace(':', ''));
+                
+                // Highlight current/next prayer
+                const isCurrent = currentTime <= prayerTime && 
+                                 (prayer === 'Fajr' || currentTime > parseInt(timings[prayersToShow[prayersToShow.indexOf(prayer)-1]].replace(':', '')));
+                
+                tableHTML += `
+                    <tr>
+                        <td${isCurrent ? ' class="highlight-time"' : ''}>${prayerNames[prayer] || prayer}</td>
+                        <td${isCurrent ? ' class="highlight-time"' : ''}>${time}</td>
+                    </tr>
+                `;
+            });
             
-            img.onerror = function() {
-                showMessage('Failed to download image. Please try again.');
-            };
+            prayerTimesBody.innerHTML = tableHTML;
         }
         
-        // Show a message
-        function showMessage(text) {
-            messageContainer.innerHTML = `
-                <div class="message success-message">${text}</div>
-            `;
+        // Initialize compass
+        function initCompass() {
+            stopCompass();
+            
+            // Create compass markers
+            compassMarkers.innerHTML = '';
+            for (let i = 0; i < 360; i += 15) {
+                const marker = document.createElement('div');
+                marker.className = 'compass-marker';
+                marker.style.transform = `rotate(${i}deg) translateY(-90px)`;
+                
+                // Add cardinal directions
+                if (i % 90 === 0) {
+                    const label = document.createElement('div');
+                    label.className = 'compass-label';
+                    label.style.transform = `rotate(${-i}deg) translateY(-70px)`;
+                    
+                    let direction;
+                    if (i === 0) direction = 'N';
+                    else if (i === 90) direction = 'E';
+                    else if (i === 180) direction = 'S';
+                    else if (i === 270) direction = 'W';
+                    
+                    label.textContent = direction;
+                    label.classList.add('compass-north');
+                    compassMarkers.appendChild(label);
+                }
+                
+                compassMarkers.appendChild(marker);
+            }
+            
+            // Request device orientation permission
+            if (window.DeviceOrientationEvent) {
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    // iOS 13+ requires permission
+                    DeviceOrientationEvent.requestPermission()
+                        .then(response => {
+                            if (response === 'granted') {
+                                startCompass();
+                            } else {
+                                console.log('Device orientation permission denied');
+                            }
+                        })
+                        .catch(console.error);
+                } else {
+                    // Other browsers
+                    startCompass();
+                }
+            } else {
+                console.log('Device orientation not supported');
+            }
         }
         
-        // Create a placeholder image
-        function createPlaceholder() {
-            return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGRjljYjEiLz48cGF0aCBkPSJNMCAwTDEwMCAxMDAiIHN0cm9rZT0iI0ZGRiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHBhdGggZD0iTTEwMCAwTDAgMTAwIiBzdHJva2U9IiNGRkYiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==';
+        // Start compass tracking
+        function startCompass() {
+            // Get current location first
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        currentLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        };
+                        
+                        // Calculate Qibla direction
+                        calculateQiblaDirection();
+                        
+                        // Start watching device orientation
+                        watchId = window.addEventListener('deviceorientation', handleOrientation);
+                    },
+                    error => {
+                        console.error('Geolocation error:', error);
+                    }
+                );
+            } else {
+                console.log('Geolocation not supported');
+            }
+        }
+        
+        // Stop compass tracking
+        function stopCompass() {
+            if (watchId) {
+                window.removeEventListener('deviceorientation', handleOrientation);
+                watchId = null;
+            }
+        }
+        
+        // Calculate Qibla direction (angle from North to Ka'bah)
+        function calculateQiblaDirection() {
+            if (!currentLocation) return;
+            
+            // Ka'bah coordinates
+            const kaabaLat = 21.422487;
+            const kaabaLong = 39.826206;
+            
+            // Convert degrees to radians
+            const phi1 = currentLocation.latitude * Math.PI / 180;
+            const phi2 = kaabaLat * Math.PI / 180;
+            const deltaLambda = (kaabaLong - currentLocation.longitude) * Math.PI / 180;
+            
+            // Calculate Qibla direction
+            const y = Math.sin(deltaLambda);
+            const x = Math.cos(phi1) * Math.tan(phi2) - Math.sin(phi1) * Math.cos(deltaLambda);
+            let qiblaDirection = Math.atan2(y, x) * 180 / Math.PI;
+            
+            // Normalize to 0-360
+            currentQiblaDirection = (qiblaDirection + 360) % 360;
+            
+            // Initial arrow position
+            updateQiblaArrow(0);
+        }
+        
+        // Handle device orientation changes
+        function handleOrientation(event) {
+            if (event.absolute && event.alpha !== null) {
+                // alpha: rotation around z-axis (0-360)
+                const compassHeading = event.alpha;
+                updateQiblaArrow(compassHeading);
+            }
+        }
+        
+        // Update Qibla arrow position
+        function updateQiblaArrow(heading) {
+            if (currentQiblaDirection === null) return;
+            
+            // Calculate the angle between device heading and Qibla direction
+            const angle = (360 - heading + currentQiblaDirection) % 360;
+            qiblaArrow.style.transform = `rotate(${angle}deg) translateX(5px)`;
+            
+            // Update Qibla label
+            const qiblaLabel = document.querySelector('.compass-qibla');
+            if (qiblaLabel) {
+                qiblaLabel.textContent = `${Math.round(currentQiblaDirection)}°`;
+            } else {
+                const label = document.createElement('div');
+                label.className = 'compass-label compass-qibla';
+                label.style.transform = `rotate(${-angle}deg) translateY(-50px)`;
+                label.textContent = `${Math.round(currentQiblaDirection)}°`;
+                compassMarkers.appendChild(label);
+            }
         }
         
         // Initialize the app when DOM is loaded
