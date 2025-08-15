@@ -312,7 +312,13 @@
         const SECRET_KEY = 'YCJVmICHsrm-RWjQEwSk9TEnolqcYaJeIZg1Af504AY';
         
         // App state
-        let currentPage = 'home';
+function previewWallpaper(wallpaper) {
+    previousPage = currentPage; // simpan halaman sebelumnya
+    currentWallpaper = wallpaper;
+    previewImage.src = wallpaper.urls?.regular || createPlaceholder();
+    previewImage.alt = wallpaper.alt_description || 'Wallpaper preview';
+    navigateTo('preview');
+}
         let currentCategory = '';
         let currentWallpaper = null;
         let categories = [
@@ -373,13 +379,9 @@
             darkModeToggle.addEventListener('click', toggleDarkMode);
             
             // Back button in preview
-            backBtn.addEventListener('click', () => {
-                if (currentCategory) {
-                    navigateTo('gallery');
-                } else {
-                    navigateTo(currentPage);
-                }
-            });
+backBtn.addEventListener('click', () => {
+    navigateTo(previousPage); // kembali ke halaman sebelumnya
+});
             
             // Download button
             downloadBtn.addEventListener('click', downloadWallpaper);
@@ -520,20 +522,31 @@
         }
         
         // Download wallpaper
-        function downloadWallpaper() {
-            if (!currentWallpaper) return;
-            
+function downloadWallpaper() {
+    if (!currentWallpaper) return;
+
+    const imageUrl = currentWallpaper.urls?.regular || createPlaceholder();
+    const timestamp = new Date().getTime();
+    const category = currentCategory
+        ? currentCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+        : 'featured';
+    const filename = `wallpaper-${category}-${timestamp}.jpg`;
+
+    // Paksa download via Blob
+    fetch(imageUrl)
+        .then(res => res.blob())
+        .then(blob => {
+            const blobUrl = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            const timestamp = new Date().getTime();
-            const category = currentCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            const filename = `wallpaper-${category}-${timestamp}.jpg`;
-            
-            link.href = currentWallpaper.urls?.regular || createPlaceholder();
+            link.href = blobUrl;
             link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
+            URL.revokeObjectURL(blobUrl);
+        })
+        .catch(err => console.error('Download error:', err));
+}
         
         // Create a placeholder image
         function createPlaceholder() {
