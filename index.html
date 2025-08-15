@@ -131,7 +131,7 @@ function setupEventListeners(){
     navbarItems.forEach(item=>{item.addEventListener('click',()=>{navigateTo(item.dataset.page); navbarItems.forEach(navItem=>navItem.classList.remove('active')); item.classList.add('active');});});
     darkModeToggle.addEventListener('click',toggleDarkMode);
     backBtn.addEventListener('click',()=>{navigateTo(previousPage);});
-    downloadBtn.addEventListener('click',downloadWallpaper);
+    downloadBtn.addEventListener('click', downloadWallpaperCanvas);
 }
 
 function navigateTo(page){
